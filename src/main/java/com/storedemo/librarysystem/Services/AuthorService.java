@@ -84,17 +84,16 @@ public class AuthorService {
         return authorDTO;
     }
 
-    public AuthorDTO findAuthorById(Long id){
+    public AuthorDTO findAuthorById(Long id) {
         Optional<Author> author = authorRepository.findById(id);
-        if(author.isPresent()){
+        if (author.isPresent()) {
             throw new RuntimeException("Author not found");
         }
         AuthorDTO authorDTO = authorMapper.toDTO(author.get());
-        if(author.get().getBooks() != null){
+        if (author.get().getBooks() != null) {
             List<BookDTO> books = bookMapper.toDTOList(author.get().getBooks());
             authorDTO.books().addAll(books);
         }
         return authorDTO;
-     }
-
+    }
 }

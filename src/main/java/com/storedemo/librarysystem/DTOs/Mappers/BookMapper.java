@@ -1,7 +1,6 @@
 package com.storedemo.librarysystem.DTOs.Mappers;
 
 import com.storedemo.librarysystem.DTOs.Book.BookDTO;
-import com.storedemo.librarysystem.DTOs.SimpleBookDTO;
 import com.storedemo.librarysystem.Entities.Book;
 
 import java.util.ArrayList;
@@ -50,7 +49,4 @@ public class BookMapper {
 
 
 
-    public static SimpleBookDTO toSimpleDTO(Book book) {
-        return new SimpleBookDTO(book.getId(), book.getTitle());
-    }
 }

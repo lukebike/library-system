@@ -1,4 +1,4 @@
-package com.storedemo.librarysystem.DTOs;
+package com.storedemo.librarysystem.DTOs.User;
 
 import java.time.LocalDateTime;
 
@@ -7,7 +7,6 @@ public record UserDTO(
         String firstName,
         String lastName,
         String email,
-        String password,
         LocalDateTime registrationDate
 ) {
 }
