@@ -2,7 +2,9 @@ package com.storedemo.librarysystem.Entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenerationTime;
 
+import javax.annotation.processing.Generated;
 import java.time.LocalDateTime;
 
 @Entity
@@ -10,7 +12,8 @@ import java.time.LocalDateTime;
 public class Loan {
 
     @Id
-    @Column(name = "loan_id")
+    @Column(name = "loan_id", columnDefinition = "INTEGER")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne

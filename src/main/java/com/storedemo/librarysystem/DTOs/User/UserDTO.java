@@ -1,5 +1,7 @@
 package com.storedemo.librarysystem.DTOs.User;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 
 public record UserDTO(
@@ -7,6 +9,7 @@ public record UserDTO(
         String firstName,
         String lastName,
         String email,
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime registrationDate
 ) {
 }

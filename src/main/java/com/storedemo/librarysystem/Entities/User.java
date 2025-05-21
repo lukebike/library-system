@@ -14,8 +14,8 @@ import java.util.List;
 public class User {
 
     @Id
-    @Column(name = "user_id")
-    @Generated(GenerationTime.INSERT)
+    @Column(name = "user_id", columnDefinition = "INTEGER")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "first_name")

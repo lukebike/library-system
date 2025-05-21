@@ -11,8 +11,8 @@ import java.util.List;
 public class Author {
 
     @Id
-    @Column(name = "author_id")
-    @Generated(GenerationTime.INSERT)
+    @Column(name = "author_id", columnDefinition = "INTEGER")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "first_name")

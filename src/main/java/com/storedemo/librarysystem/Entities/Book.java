@@ -10,8 +10,8 @@ import org.hibernate.annotations.GenerationTime;
 @Table(name = "books")  // Måste matcha tabellnamnet i databasen
 public class Book {
     @Id
-    @Column(name = "book_id")
-    @Generated(GenerationTime.INSERT)
+    @Column(name = "book_id", columnDefinition = "INTEGER")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "title")
@@ -25,8 +25,6 @@ public class Book {
 
     @Column(name = "total_copies")
     private int totalCopies;
-
-
 
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "author_id")
