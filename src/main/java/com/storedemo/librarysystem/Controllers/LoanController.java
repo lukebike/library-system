@@ -44,4 +44,12 @@ public class LoanController {
         return ResponseEntity.ok(loanDTO);
    }
 
+   @PutMapping("/{id}/return")
+    public ResponseEntity<LoanDTO> returnLoan(@PathVariable long id){
+        LoanDTO loanDTO = loanService.returnLoan(id);
+        if (loanDTO == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(loanDTO);
+   }
 }

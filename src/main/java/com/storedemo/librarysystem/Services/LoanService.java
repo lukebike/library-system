@@ -37,13 +37,14 @@ public class LoanService {
     private LoanMapper loanMapper;
     private UserMapper userMapper;
     private BookMapper bookMapper;
-
+    private AuthorMapper authorMapper;
 
 
     public LoanService() {
         this.loanMapper = new LoanMapper();
         this.userMapper = new UserMapper();
         this.bookMapper = new BookMapper();
+        this.authorMapper = new AuthorMapper();
     }
 
     public List<LoanDTO> getLoansByUserId(long userId) {
@@ -63,9 +64,14 @@ public class LoanService {
 
         Book book = bookRepository.findById(createLoanDTO.bookId()).orElse(null);
         if (book != null) {
+            if(book.getAvailableCopies() == 0){
+                System.out.println("Can not loan without available copies");
+                return null;
+            }
             if(book.getAvailableCopies() > 0){
                 book.setAvailableCopies(book.getAvailableCopies() - 1);
             }
+
         }
 
         User user = userRepository.findById(createLoanDTO.userId()).orElse(null);
@@ -90,5 +96,31 @@ public class LoanService {
         loan.setDueDate(loan.getDueDate().plusDays(14));
         loanRepository.save(loan);
         return loanMapper.toDTO(loan);
+    }
+
+    public LoanDTO returnLoan(Long loanId) {
+        Loan loan = loanRepository.findById(loanId).orElse(null);
+        if(loan == null){
+            return null;
+        }
+        if(loan.getReturnDate() != null){
+            System.out.println("Book has already been returned");
+            System.out.println("Return date: " + loan.getReturnDate());
+            return null;
+        }
+        if(loan.getBook().getAvailableCopies() < loan.getBook().getTotalCopies()){
+            loan.getBook().setAvailableCopies(loan.getBook().getAvailableCopies() + 1);
+        }
+
+        loan.setReturnDate(LocalDateTime.now());
+        Loan saved = loanRepository.save(loan);
+        UserDTO userDTO = userMapper.toDTO(saved.getUser());
+        BookDTO bookDTO = new BookDTO(saved.getBook().getId(), saved.getBook().getTitle(),
+                saved.getBook().getPublicationYear(),
+                saved.getBook().getAvailableCopies(),
+                saved.getBook().getTotalCopies(),
+                authorMapper.toDTO(saved.getBook().getAuthor()));
+
+        return new LoanDTO(userDTO, bookDTO, saved.getLoanDate(), saved.getDueDate(), saved.getReturnDate());
     }
 }
