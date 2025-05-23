@@ -7,6 +7,8 @@ import com.storedemo.librarysystem.DTOs.Mappers.AuthorMapper;
 import com.storedemo.librarysystem.DTOs.Mappers.BookMapper;
 import com.storedemo.librarysystem.Entities.Author;
 import com.storedemo.librarysystem.Entities.Book;
+import com.storedemo.librarysystem.ExceptionHandler.AuthorNotFoundException;
+import com.storedemo.librarysystem.ExceptionHandler.BookNotFoundException;
 import com.storedemo.librarysystem.Repositories.AuthorRepository;
 import com.storedemo.librarysystem.Repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +26,9 @@ public class BookService {
     @Autowired
     private AuthorRepository authorRepository;
 
-    private BookMapper bookMapper;
+    private final BookMapper bookMapper;
 
-    private AuthorMapper authorMapper;
+    private final AuthorMapper authorMapper;
 
     public BookService() {
         bookMapper = new BookMapper();
@@ -63,21 +65,20 @@ public class BookService {
 
     public BookDTO getBookByTitle(String title){
        Book book = bookRepository.findByTitleIgnoreCase(title).orElse(null);
-       if(book != null){
-           AuthorDTO authorDTO = authorMapper.toDTO(book.getAuthor());
-           BookDTO bookDTO = new BookDTO(book.getId(),
-                   book.getTitle(),
-                   book.getPublicationYear(),
-                   book.getAvailableCopies(),
-                   book.getTotalCopies(),
-                   authorDTO);
-           return bookDTO;
+       if(book == null){
+           throw new BookNotFoundException("Book not found, please enter a valid title");
        }
-    return null;
+        AuthorDTO authorDTO = authorMapper.toDTO(book.getAuthor());
+        return new BookDTO(book.getId(),
+                book.getTitle(),
+                book.getPublicationYear(),
+                book.getAvailableCopies(),
+                book.getTotalCopies(),
+                authorDTO);
     }
 
     public BookDTO createBook(CreateBookDTO createBookDTO) {
-        Author author = authorRepository.findById(createBookDTO.authorId()).orElseThrow(() -> new RuntimeException("Author not found"));
+        Author author = authorRepository.findById(createBookDTO.authorId()).orElseThrow(() -> new AuthorNotFoundException("Author not found, please enter a valid id"));
         Book book = new Book();
         book.setAuthor(author);
         book.setTitle(createBookDTO.title());

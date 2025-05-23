@@ -11,6 +11,7 @@ import com.storedemo.librarysystem.DTOs.User.UserDTO;
 import com.storedemo.librarysystem.Entities.Book;
 import com.storedemo.librarysystem.Entities.Loan;
 import com.storedemo.librarysystem.Entities.User;
+import com.storedemo.librarysystem.ExceptionHandler.LoanNotFoundException;
 import com.storedemo.librarysystem.Repositories.BookRepository;
 import com.storedemo.librarysystem.Repositories.LoanRepository;
 import com.storedemo.librarysystem.Repositories.UserRepository;
@@ -65,8 +66,7 @@ public class LoanService {
         Book book = bookRepository.findById(createLoanDTO.bookId()).orElse(null);
         if (book != null) {
             if(book.getAvailableCopies() == 0){
-                System.out.println("Can not loan without available copies");
-                return null;
+                throw new RuntimeException("Can not loan without available copies");
             }
             if(book.getAvailableCopies() > 0){
                 book.setAvailableCopies(book.getAvailableCopies() - 1);
@@ -104,9 +104,7 @@ public class LoanService {
             return null;
         }
         if(loan.getReturnDate() != null){
-            System.out.println("Book has already been returned");
-            System.out.println("Return date: " + loan.getReturnDate());
-            return null;
+            throw new LoanNotFoundException("Book has already been returned, book return date: " + loan.getReturnDate());
         }
         if(loan.getBook().getAvailableCopies() < loan.getBook().getTotalCopies()){
             loan.getBook().setAvailableCopies(loan.getBook().getAvailableCopies() + 1);

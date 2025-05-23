@@ -4,6 +4,7 @@ import com.storedemo.librarysystem.DTOs.Mappers.UserMapper;
 import com.storedemo.librarysystem.DTOs.User.CreateUserDTO;
 import com.storedemo.librarysystem.DTOs.User.UserDTO;
 import com.storedemo.librarysystem.Entities.User;
+import com.storedemo.librarysystem.ExceptionHandler.UserNotFoundException;
 import com.storedemo.librarysystem.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
@@ -39,9 +40,9 @@ public class UserService {
     public UserDTO getUserByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
-            UserDTO userDTO = userMapper.toDTO(user.get());
-            return userDTO;
-        } else return null;
+            return userMapper.toDTO(user.get());
+        }
+        throw new UserNotFoundException("User with email " + email + " not found");
     }
 
     public UserDTO createUser(CreateUserDTO createUserDTO) {

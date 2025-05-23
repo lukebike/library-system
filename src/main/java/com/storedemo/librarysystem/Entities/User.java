@@ -31,7 +31,6 @@ public class User {
     private String password;
 
     @Column(name = "registration_date")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime registrationDate;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

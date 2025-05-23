@@ -6,6 +6,7 @@ import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.DTOs.Mappers.AuthorMapper;
 import com.storedemo.librarysystem.DTOs.Mappers.BookMapper;
 import com.storedemo.librarysystem.Entities.Author;
+import com.storedemo.librarysystem.ExceptionHandler.AuthorNotFoundException;
 import com.storedemo.librarysystem.Repositories.AuthorRepository;
 import com.storedemo.librarysystem.Repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,9 @@ public class AuthorService {
 
     public AuthorDTO getAuthorByLastName(String lastName){
         Optional<Author> author = authorRepository.findByLastNameIgnoreCase(lastName);
+        if(author.isEmpty()){
+            throw new AuthorNotFoundException("Author with the last name: " + lastName + " not found");
+        }
         AuthorDTO authorDTO = authorMapper.toDTO(author.get());
         if(author.get().getBooks() != null){
             List<BookDTO> books = bookMapper.toDTOList(author.get().getBooks());
@@ -86,8 +90,8 @@ public class AuthorService {
 
     public AuthorDTO findAuthorById(Long id) {
         Optional<Author> author = authorRepository.findById(id);
-        if (author.isPresent()) {
-            throw new RuntimeException("Author not found");
+        if (author.isEmpty()) {
+            throw new AuthorNotFoundException("Author with the id: " + id + " not found");
         }
         AuthorDTO authorDTO = authorMapper.toDTO(author.get());
         if (author.get().getBooks() != null) {
