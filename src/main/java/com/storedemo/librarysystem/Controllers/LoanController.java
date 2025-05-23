@@ -1,9 +1,11 @@
 package com.storedemo.librarysystem.Controllers;
 
 
+import br.com.fluentvalidator.context.ValidationResult;
 import com.storedemo.librarysystem.DTOs.Loan.CreateLoanDTO;
 import com.storedemo.librarysystem.DTOs.Loan.LoanDTO;
 import com.storedemo.librarysystem.Services.LoanService;
+import com.storedemo.librarysystem.Validators.LoanValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,9 @@ public class LoanController {
     @Autowired
     private LoanService loanService;
 
+    @Autowired
+    private LoanValidator loanValidator;
+
     @GetMapping("/{userId}")
     public ResponseEntity<List<LoanDTO>> getLoanByUserId(@PathVariable long userId) {
         List<LoanDTO> loanDTOList = loanService.getLoansByUserId(userId);
@@ -27,11 +32,12 @@ public class LoanController {
     }
 
    @PostMapping
-   public ResponseEntity<LoanDTO> createLoan(@RequestBody CreateLoanDTO createLoanDTO) {
+   public ResponseEntity<?> createLoan(@RequestBody CreateLoanDTO createLoanDTO) {
+       ValidationResult validationResult = loanValidator.validate(createLoanDTO);
+       if (!validationResult.isValid()) {
+           return ResponseEntity.badRequest().body(validationResult.getErrors());
+       }
         LoanDTO loanDTO = loanService.createLoan(createLoanDTO);
-        if (loanDTO == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(loanDTO);
    }
 

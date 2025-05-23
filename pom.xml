@@ -59,6 +59,11 @@
             <artifactId>hibernate-community-dialects</artifactId>
             <version>6.4.4.Final</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.mvallim</groupId>
+            <artifactId>java-fluent-validator</artifactId>
+            <version>1.10.0</version>
+        </dependency>
     </dependencies>
 
     <build>
