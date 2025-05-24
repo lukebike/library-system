@@ -7,10 +7,7 @@ import com.storedemo.librarysystem.Entities.User;
 import com.storedemo.librarysystem.ExceptionHandler.UserNotFoundException;
 import com.storedemo.librarysystem.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +19,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
     public UserService() {
         this.userMapper = new UserMapper();

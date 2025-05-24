@@ -11,7 +11,6 @@ import com.storedemo.librarysystem.Repositories.AuthorRepository;
 import com.storedemo.librarysystem.Repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +24,8 @@ public class AuthorService {
     @Autowired
     private BookRepository bookRepository;
 
-    private AuthorMapper authorMapper;
-    private BookMapper bookMapper;
+    private final AuthorMapper authorMapper;
+    private final BookMapper bookMapper;
 
     public AuthorService() {
         this.authorMapper = new AuthorMapper();
@@ -34,21 +33,6 @@ public class AuthorService {
     }
 
 
-    public AuthorRepository getAuthorRepository() {
-        return authorRepository;
-    }
-
-    public void setAuthorRepository(AuthorRepository authorRepository) {
-        this.authorRepository = authorRepository;
-    }
-
-    public AuthorMapper getAuthorMapper() {
-        return authorMapper;
-    }
-
-    public void setAuthorMapper(AuthorMapper authorMapper) {
-        this.authorMapper = authorMapper;
-    }
 
     public AuthorDTO createAuthor(CreateAuthorDTO createAuthorDTO){
         Author author = new Author();

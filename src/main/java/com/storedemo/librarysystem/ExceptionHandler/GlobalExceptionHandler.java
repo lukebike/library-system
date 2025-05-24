@@ -22,4 +22,9 @@ public class GlobalExceptionHandler{
     public ResponseEntity<String> authorNotFound(AuthorNotFoundException e){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> userNotFound(UserNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
 }

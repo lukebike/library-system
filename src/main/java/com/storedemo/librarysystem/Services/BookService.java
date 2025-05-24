@@ -12,8 +12,10 @@ import com.storedemo.librarysystem.ExceptionHandler.BookNotFoundException;
 import com.storedemo.librarysystem.Repositories.AuthorRepository;
 import com.storedemo.librarysystem.Repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,9 +37,11 @@ public class BookService {
         authorMapper = new AuthorMapper();
     }
 
-    public List<BookDTO> getAllBooks() {
+    public List<BookDTO> getAllBooks(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+        List<Book> books = bookPage.getContent();
         List<BookDTO> bookDTOList = new ArrayList<>();
-        List<Book> books = bookRepository.findAll().stream().toList();
         return getBookDTOS(bookDTOList, books);
     }
 
@@ -66,7 +70,7 @@ public class BookService {
     public BookDTO getBookByTitle(String title){
        Book book = bookRepository.findByTitleIgnoreCase(title).orElse(null);
        if(book == null){
-           throw new BookNotFoundException("Book not found, please enter a valid title");
+           throw new BookNotFoundException("Book with title " + title + " not found, please enter a valid title");
        }
         AuthorDTO authorDTO = authorMapper.toDTO(book.getAuthor());
         return new BookDTO(book.getId(),

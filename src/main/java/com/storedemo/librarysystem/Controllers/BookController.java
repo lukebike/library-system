@@ -3,13 +3,13 @@ package com.storedemo.librarysystem.Controllers;
 import br.com.fluentvalidator.context.ValidationResult;
 import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.DTOs.Book.CreateBookDTO;
+import com.storedemo.librarysystem.ExceptionHandler.BookNotFoundException;
 import com.storedemo.librarysystem.Services.BookService;
 import com.storedemo.librarysystem.Validators.BookValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -27,10 +27,10 @@ public class BookController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<BookDTO>> getBooks(){
-        List<BookDTO> books = bookService.getAllBooks();
-        if(books == null){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<List<BookDTO>> getBooks(@RequestParam int pageNumber, @RequestParam int pageSize) {
+        List<BookDTO> books = bookService.getAllBooks(pageNumber, pageSize);
+        if(books.isEmpty()) {
+            throw new BookNotFoundException("Books not found, please enter a valid page or page size");
         }
         else {
             return new ResponseEntity<>(books, HttpStatus.OK);
@@ -41,7 +41,7 @@ public class BookController {
     public ResponseEntity<BookDTO> getBookByTitle(@RequestParam String title){
         BookDTO book = bookService.getBookByTitle(title);
         if(book == null){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            throw new BookNotFoundException("Book not found, please enter a valid title");
         }
         return new ResponseEntity<>(book, HttpStatus.OK);
     }

@@ -1,13 +1,9 @@
 package com.storedemo.librarysystem.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
-
 @Entity
-@Table(name = "books")  // Måste matcha tabellnamnet i databasen
+@Table(name = "books")
 public class Book {
     @Id
     @Column(name = "book_id", columnDefinition = "INTEGER")

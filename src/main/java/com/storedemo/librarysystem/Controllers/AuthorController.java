@@ -34,6 +34,7 @@ public class AuthorController {
         if(author == null){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+
         return new ResponseEntity<>(author, HttpStatus.OK);
     }
 
