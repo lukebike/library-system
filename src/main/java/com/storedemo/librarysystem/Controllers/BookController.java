@@ -37,6 +37,19 @@ public class BookController {
         }
     }
 
+    @GetMapping("/publication")
+    public ResponseEntity<List<BookDTO>> getBooksByPublicationYear(@RequestParam int pageNumber, @RequestParam int pageSize, @RequestParam String param) {
+        if(param == null || param.isEmpty()) {
+            throw new BookNotFoundException("Books not found, please enter a valid parameter for publication year");
+        }
+        List<BookDTO> books = bookService.getAllBooksSortedByPublicationDate(pageNumber, pageSize, param);
+        if(books.isEmpty()) {
+            throw new BookNotFoundException("Books not found, please enter a valid page or page size or parameter.");
+        } else {
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        }
+    }
+
     @GetMapping("/search")
     public ResponseEntity<BookDTO> getBookByTitle(@RequestParam String title){
         BookDTO book = bookService.getBookByTitle(title);
@@ -45,6 +58,7 @@ public class BookController {
         }
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
+
 
     @PostMapping()
     public ResponseEntity<?> createBook(@RequestBody CreateBookDTO book){

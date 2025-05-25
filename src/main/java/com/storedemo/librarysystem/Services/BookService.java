@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,25 @@ public class BookService {
         List <Book> books = bookRepository.findByAuthorId(authorId).stream().toList();
         return getBookDTOS(bookDTOList, books);
     }
+
+    public List<BookDTO> getAllBooksSortedByPublicationDate(int pageNumber, int pageSize, String param) {
+        if(param.equals("ascending")) {
+            Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("publicationYear").ascending());
+            Page<Book> bookPage = bookRepository.findAll(pageable);
+            List<Book> books = bookPage.getContent();
+            List<BookDTO> bookDTOList = new ArrayList<>();
+            return getBookDTOS(bookDTOList, books);
+        }
+        if(param.equals("descending")) {
+            Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("publicationYear").descending());
+            Page<Book> bookPage = bookRepository.findAll(pageable);
+            List<Book> books = bookPage.getContent();
+            List<BookDTO> bookDTOList = new ArrayList<>();
+            return getBookDTOS(bookDTOList, books);
+        }
+        throw new BookNotFoundException("Invalid parameter, please enter one of the two options: Ascending or descending");
+    }
+
 
     private List<BookDTO> getBookDTOS(List<BookDTO> bookDTOList, List<Book> books) {
         for(Book book : books) {
