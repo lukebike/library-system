@@ -4,9 +4,11 @@ import com.storedemo.librarysystem.DTOs.Author.AuthorDTO;
 import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.Entities.Author;
 import com.storedemo.librarysystem.Entities.Book;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
+@Component
 public class AuthorMapper {
 
     public AuthorMapper() {

@@ -1,9 +1,5 @@
 package com.storedemo.librarysystem.Entities;
-
 import jakarta.persistence.*;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
-
 import java.util.List;
 
 @Entity

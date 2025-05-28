@@ -7,13 +7,19 @@ import com.storedemo.librarysystem.DTOs.Mappers.AuthorMapper;
 import com.storedemo.librarysystem.DTOs.Mappers.BookMapper;
 import com.storedemo.librarysystem.Entities.Author;
 import com.storedemo.librarysystem.Entities.Book;
+import com.storedemo.librarysystem.ExceptionHandler.AuthorNotFoundException;
+import com.storedemo.librarysystem.ExceptionHandler.BookNotFoundException;
 import com.storedemo.librarysystem.Repositories.AuthorRepository;
 import com.storedemo.librarysystem.Repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -24,60 +30,60 @@ public class BookService {
     @Autowired
     private AuthorRepository authorRepository;
 
-    private BookMapper bookMapper;
+    private final BookMapper bookMapper;
 
-    private AuthorMapper authorMapper;
+    private final AuthorMapper authorMapper;
 
     public BookService() {
         bookMapper = new BookMapper();
         authorMapper = new AuthorMapper();
     }
 
-    public List<BookDTO> getAllBooks() {
-        List<BookDTO> bookDTOList = new ArrayList<>();
-        List<Book> books = bookRepository.findAll().stream().toList();
-        return getBookDTOS(bookDTOList, books);
+    public List<BookDTO> getAllBooks(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+        List<Book> books = bookPage.getContent();
+        return books.stream().map(bookMapper::toDTO).collect(Collectors.toList());
     }
 
 
     public List<BookDTO> getBooksByAuthorId(Long authorId) {
-        List <BookDTO> bookDTOList = new ArrayList<>();
         List <Book> books = bookRepository.findByAuthorId(authorId).stream().toList();
-        return getBookDTOS(bookDTOList, books);
+        return books.stream().map(bookMapper::toDTO).collect(Collectors.toList());
     }
 
-    private List<BookDTO> getBookDTOS(List<BookDTO> bookDTOList, List<Book> books) {
-        for(Book book : books) {
-            AuthorDTO authorDTO = authorMapper.toDTO(book.getAuthor());
-            BookDTO bookDTO = new BookDTO(book.getId(),
-                    book.getTitle(),
-                    book.getPublicationYear(),
-                    book.getAvailableCopies(),
-                    book.getTotalCopies(),
-                    authorDTO);
-            bookDTOList.add(bookDTO);
+    public List<BookDTO> getAllBooksSortedByPublicationDate(int pageNumber, int pageSize, String param) {
+        if(param.equals("ascending")) {
+            Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("publicationYear").ascending());
+            Page<Book> bookPage = bookRepository.findAll(pageable);
+            List<Book> books = bookPage.getContent();
+            return books.stream().map(bookMapper::toDTO).collect(Collectors.toList());
         }
-        return bookDTOList;
+        if(param.equals("descending")) {
+            Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("publicationYear").descending());
+            Page<Book> bookPage = bookRepository.findAll(pageable);
+            List<Book> books = bookPage.getContent();
+            return books.stream().map(bookMapper::toDTO).collect(Collectors.toList());
+        }
+        throw new BookNotFoundException("Invalid parameter, please enter one of the two options: Ascending or descending");
     }
-
 
     public BookDTO getBookByTitle(String title){
        Book book = bookRepository.findByTitleIgnoreCase(title).orElse(null);
-       if(book != null){
-           AuthorDTO authorDTO = authorMapper.toDTO(book.getAuthor());
-           BookDTO bookDTO = new BookDTO(book.getId(),
-                   book.getTitle(),
-                   book.getPublicationYear(),
-                   book.getAvailableCopies(),
-                   book.getTotalCopies(),
-                   authorDTO);
-           return bookDTO;
+       if(book == null){
+           throw new BookNotFoundException("Book with title " + title + " not found, please enter a valid title");
        }
-    return null;
+        AuthorDTO authorDTO = authorMapper.toDTO(book.getAuthor());
+        return new BookDTO(book.getId(),
+                book.getTitle(),
+                book.getPublicationYear(),
+                book.getAvailableCopies(),
+                book.getTotalCopies(),
+                authorDTO);
     }
 
     public BookDTO createBook(CreateBookDTO createBookDTO) {
-        Author author = authorRepository.findById(createBookDTO.authorId()).orElseThrow(() -> new RuntimeException("Author not found"));
+        Author author = authorRepository.findById(createBookDTO.authorId()).orElseThrow(() -> new AuthorNotFoundException("Author not found, please enter a valid id"));
         Book book = new Book();
         book.setAuthor(author);
         book.setTitle(createBookDTO.title());

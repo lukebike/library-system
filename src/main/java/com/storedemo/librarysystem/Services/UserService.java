@@ -4,16 +4,15 @@ import com.storedemo.librarysystem.DTOs.Mappers.UserMapper;
 import com.storedemo.librarysystem.DTOs.User.CreateUserDTO;
 import com.storedemo.librarysystem.DTOs.User.UserDTO;
 import com.storedemo.librarysystem.Entities.User;
+import com.storedemo.librarysystem.ExceptionHandler.UserNotFoundException;
 import com.storedemo.librarysystem.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -21,7 +20,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
     public UserService() {
         this.userMapper = new UserMapper();
@@ -29,19 +28,15 @@ public class UserService {
 
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
-        List<UserDTO> userDTOs = new ArrayList<>();
-        for (User user : users) {
-            userDTOs.add(userMapper.toDTO(user));
-        }
-        return userDTOs;
+        return users.stream().map(userMapper::toDTO).collect(Collectors.toList());
     }
 
     public UserDTO getUserByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
-            UserDTO userDTO = userMapper.toDTO(user.get());
-            return userDTO;
-        } else return null;
+            return userMapper.toDTO(user.get());
+        }
+        throw new UserNotFoundException("User with email " + email + " not found");
     }
 
     public UserDTO createUser(CreateUserDTO createUserDTO) {

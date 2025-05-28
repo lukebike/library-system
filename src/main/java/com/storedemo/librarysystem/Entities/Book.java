@@ -1,13 +1,9 @@
 package com.storedemo.librarysystem.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
-
 @Entity
-@Table(name = "books")  // Måste matcha tabellnamnet i databasen
+@Table(name = "books")
 public class Book {
     @Id
     @Column(name = "book_id", columnDefinition = "INTEGER")
@@ -67,6 +63,15 @@ public class Book {
 
     // Default constructor krävs av JPA
     public Book() {}
+
+    public Book(Long id, String title, int publicationYear, int availableCopies, int totalCopies, Author author) {
+        this.id = id;
+        this.title = title;
+        this.publicationYear = publicationYear;
+        this.availableCopies = availableCopies;
+        this.totalCopies = totalCopies;
+        this.author = author;
+    }
 
     // Getters och setters
     public Long getId() { return id; }
