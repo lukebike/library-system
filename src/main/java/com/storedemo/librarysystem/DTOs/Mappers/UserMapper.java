@@ -2,7 +2,9 @@ package com.storedemo.librarysystem.DTOs.Mappers;
 
 import com.storedemo.librarysystem.DTOs.User.UserDTO;
 import com.storedemo.librarysystem.Entities.User;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserMapper {
 
         public UserDTO toDTO(User user) {

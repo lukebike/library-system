@@ -38,25 +38,26 @@ public class LoanService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
     private LoanMapper loanMapper;
+
+    @Autowired
     private UserMapper userMapper;
+
+    @Autowired
     private BookMapper bookMapper;
+
+    @Autowired
     private AuthorMapper authorMapper;
 
-
     public LoanService() {
-        this.loanMapper = new LoanMapper();
-        this.userMapper = new UserMapper();
-        this.bookMapper = new BookMapper();
-        this.authorMapper = new AuthorMapper();
     }
 
     @Transactional(readOnly = true)
     public List<LoanDTO> getLoansByUserId(long userId) {
         Optional<List<Loan>> loans = loanRepository.findByUserId(userId);
         return loans
-                .map(list -> list.stream()
-                        .map(loan -> new LoanDTO(
+                .map(list -> list.stream().map(loan -> new LoanDTO(loan.getId(),
                                 userMapper.toDTO(loan.getUser()),
                                 bookMapper.toDTO(loan.getBook()),
                                 loan.getLoanDate(),
@@ -100,7 +101,7 @@ public class LoanService {
         UserDTO userDTO = userMapper.toDTO(saved.getUser());
         BookDTO bookDTO = bookMapper.toDTO(saved.getBook());
 
-        return new LoanDTO(userDTO, bookDTO, saved.getLoanDate(), saved.getDueDate(), saved.getReturnDate());
+        return new LoanDTO(saved.getId(), userDTO, bookDTO, saved.getLoanDate(), saved.getDueDate(), saved.getReturnDate());
     }
 
     public LoanDTO extendLoan(Long loanId) {
@@ -134,6 +135,6 @@ public class LoanService {
                 saved.getBook().getTotalCopies(),
                 authorMapper.toDTO(saved.getBook().getAuthor()));
 
-        return new LoanDTO(userDTO, bookDTO, saved.getLoanDate(), saved.getDueDate(), saved.getReturnDate());
+        return new LoanDTO(saved.getId(), userDTO, bookDTO, saved.getLoanDate(), saved.getDueDate(), saved.getReturnDate());
     }
 }

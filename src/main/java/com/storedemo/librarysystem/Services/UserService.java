@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -27,11 +28,7 @@ public class UserService {
 
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
-        List<UserDTO> userDTOs = new ArrayList<>();
-        for (User user : users) {
-            userDTOs.add(userMapper.toDTO(user));
-        }
-        return userDTOs;
+        return users.stream().map(userMapper::toDTO).collect(Collectors.toList());
     }
 
     public UserDTO getUserByEmail(String email) {

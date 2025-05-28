@@ -64,6 +64,15 @@ public class Book {
     // Default constructor krävs av JPA
     public Book() {}
 
+    public Book(Long id, String title, int publicationYear, int availableCopies, int totalCopies, Author author) {
+        this.id = id;
+        this.title = title;
+        this.publicationYear = publicationYear;
+        this.availableCopies = availableCopies;
+        this.totalCopies = totalCopies;
+        this.author = author;
+    }
+
     // Getters och setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

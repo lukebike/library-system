@@ -17,8 +17,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -42,15 +43,13 @@ public class BookService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Book> bookPage = bookRepository.findAll(pageable);
         List<Book> books = bookPage.getContent();
-        List<BookDTO> bookDTOList = new ArrayList<>();
-        return getBookDTOS(bookDTOList, books);
+        return books.stream().map(bookMapper::toDTO).collect(Collectors.toList());
     }
 
 
     public List<BookDTO> getBooksByAuthorId(Long authorId) {
-        List <BookDTO> bookDTOList = new ArrayList<>();
         List <Book> books = bookRepository.findByAuthorId(authorId).stream().toList();
-        return getBookDTOS(bookDTOList, books);
+        return books.stream().map(bookMapper::toDTO).collect(Collectors.toList());
     }
 
     public List<BookDTO> getAllBooksSortedByPublicationDate(int pageNumber, int pageSize, String param) {
@@ -58,34 +57,16 @@ public class BookService {
             Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("publicationYear").ascending());
             Page<Book> bookPage = bookRepository.findAll(pageable);
             List<Book> books = bookPage.getContent();
-            List<BookDTO> bookDTOList = new ArrayList<>();
-            return getBookDTOS(bookDTOList, books);
+            return books.stream().map(bookMapper::toDTO).collect(Collectors.toList());
         }
         if(param.equals("descending")) {
             Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("publicationYear").descending());
             Page<Book> bookPage = bookRepository.findAll(pageable);
             List<Book> books = bookPage.getContent();
-            List<BookDTO> bookDTOList = new ArrayList<>();
-            return getBookDTOS(bookDTOList, books);
+            return books.stream().map(bookMapper::toDTO).collect(Collectors.toList());
         }
         throw new BookNotFoundException("Invalid parameter, please enter one of the two options: Ascending or descending");
     }
-
-
-    private List<BookDTO> getBookDTOS(List<BookDTO> bookDTOList, List<Book> books) {
-        for(Book book : books) {
-            AuthorDTO authorDTO = authorMapper.toDTO(book.getAuthor());
-            BookDTO bookDTO = new BookDTO(book.getId(),
-                    book.getTitle(),
-                    book.getPublicationYear(),
-                    book.getAvailableCopies(),
-                    book.getTotalCopies(),
-                    authorDTO);
-            bookDTOList.add(bookDTO);
-        }
-        return bookDTOList;
-    }
-
 
     public BookDTO getBookByTitle(String title){
        Book book = bookRepository.findByTitleIgnoreCase(title).orElse(null);

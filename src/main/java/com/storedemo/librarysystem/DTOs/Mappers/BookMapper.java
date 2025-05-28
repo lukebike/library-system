@@ -2,11 +2,12 @@ package com.storedemo.librarysystem.DTOs.Mappers;
 
 import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.Entities.Book;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Component
 public class BookMapper {
 
     public BookDTO toDTO(Book book) {
