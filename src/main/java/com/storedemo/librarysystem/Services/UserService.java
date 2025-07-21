@@ -2,6 +2,7 @@ package com.storedemo.librarysystem.Services;
 
 import com.storedemo.librarysystem.DTOs.Mappers.UserMapper;
 import com.storedemo.librarysystem.DTOs.User.CreateUserDTO;
+import com.storedemo.librarysystem.DTOs.User.UpdateUserDTO;
 import com.storedemo.librarysystem.DTOs.User.UserDTO;
 import com.storedemo.librarysystem.Entities.User;
 import com.storedemo.librarysystem.ExceptionHandler.UserNotFoundException;
@@ -9,7 +10,6 @@ import com.storedemo.librarysystem.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,6 +37,21 @@ public class UserService {
             return userMapper.toDTO(user.get());
         }
         throw new UserNotFoundException("User with email " + email + " not found");
+    }
+
+    public UserDTO updateUser(Long id, UpdateUserDTO updateUserDTO){
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) return null;
+        User user = userOptional.get();
+        if(!updateUserDTO.currentPassword().equals(user.getPassword())) throw new UserNotFoundException("Password does not match");
+        user.setFirstName(updateUserDTO.firstName());
+        user.setLastName(updateUserDTO.lastName());
+        user.setEmail(updateUserDTO.email());
+        if(updateUserDTO.newPassword() != null && !updateUserDTO.newPassword().isEmpty()) {
+            user.setPassword(updateUserDTO.newPassword());
+        }
+        User savedUser = userRepository.save(user);
+        return userMapper.toDTO(savedUser);
     }
 
     public UserDTO createUser(CreateUserDTO createUserDTO) {
