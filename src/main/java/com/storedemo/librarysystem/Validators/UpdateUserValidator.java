@@ -48,7 +48,6 @@ public class UpdateUserValidator extends AbstractValidator<UpdateUserDTO> {
                 .withAttempedValue(UpdateUserDTO::email);
 
         ruleFor(UpdateUserDTO::newPassword)
-                .when(pw -> pw != null && !pw.isEmpty())
                 .must(pw -> pw.length() >= 8)
                 .withMessage("New password must be at least 8 characters long")
                 .must(pw -> pw.matches(".*[A-Z].*"))
