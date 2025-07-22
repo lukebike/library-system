@@ -47,17 +47,15 @@ public class UpdateUserValidator extends AbstractValidator<UpdateUserDTO> {
                 .withFieldName("email")
                 .withAttempedValue(UpdateUserDTO::email);
 
+
         ruleFor(UpdateUserDTO::newPassword)
-                .must(pw -> pw.length() >= 8)
-                .withMessage("New password must be at least 8 characters long")
-                .must(pw -> pw.matches(".*[A-Z].*"))
-                .withMessage("New password must contain at least one uppercase letter")
-                .must(pw -> pw.matches(".*[a-z].*"))
-                .withMessage("New password must contain at least one lowercase letter")
-                .must(pw -> pw.matches(".*\\d.*"))
-                .withMessage("New password must contain at least one number")
-                .must(pw -> pw.matches(".*[!@#$%^&*(),.?\":{}|<>].*"))
-                .withMessage("New password must contain at least one special character");
+                .must(pw -> pw == null || pw.isEmpty() ||
+                        (pw.length() >= 8 &&
+                                pw.matches(".*[A-Z].*") &&
+                                pw.matches(".*[a-z].*") &&
+                                pw.matches(".*\\d.*") &&
+                                pw.matches(".*[!@#$%^&*(),.?\":{}|<>].*")))
+                .withMessage("New password must be at least 8 characters, contain upper and lower case letters, a number, and a special character");
 
         ruleFor(UpdateUserDTO::currentPassword)
                 .must(not(String::isEmpty))

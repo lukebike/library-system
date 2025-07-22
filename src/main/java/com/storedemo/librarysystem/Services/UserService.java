@@ -65,4 +65,10 @@ public class UserService {
         return userMapper.toDTO(saved);
     }
 
+    public boolean deleteUser(Long id){
+        Optional<User> userOptional = userRepository.findById(id);
+        if(userOptional.isEmpty()) return false;
+        userRepository.delete(userOptional.get());
+        return true;
+    }
 }
