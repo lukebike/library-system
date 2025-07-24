@@ -111,7 +111,6 @@ public class AuthorService {
         Author author = authorOptional.get();
         author.setFirstName(updateAuthorDTO.firstName());
         author.setLastName(updateAuthorDTO.lastName());
-        author.setBirthYear(updateAuthorDTO.birthYear());
         author.setNationality(updateAuthorDTO.nationality());
         Author savedAuthor = authorRepository.save(author);
         AuthorDTO authorDTO = authorMapper.toDTO(savedAuthor);

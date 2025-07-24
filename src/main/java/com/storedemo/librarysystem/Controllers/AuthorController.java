@@ -4,8 +4,10 @@ import br.com.fluentvalidator.context.ValidationResult;
 import com.storedemo.librarysystem.DTOs.Author.AuthorDTO;
 import com.storedemo.librarysystem.DTOs.Author.CreateAuthorDTO;
 
+import com.storedemo.librarysystem.DTOs.Author.UpdateAuthorDTO;
 import com.storedemo.librarysystem.Services.AuthorService;
-import com.storedemo.librarysystem.Validators.AuthorValidator;
+import com.storedemo.librarysystem.Validators.Authors.AuthorValidator;
+import com.storedemo.librarysystem.Validators.Authors.UpdateAuthorValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ public class AuthorController {
 
     @Autowired
     private AuthorValidator authorValidator;
+
+    @Autowired
+    private UpdateAuthorValidator updateAuthorValidator;
 
     @GetMapping()
     public ResponseEntity<List<AuthorDTO>> getAuthors(){
@@ -46,6 +51,19 @@ public class AuthorController {
         }
         AuthorDTO author = authorService.createAuthor(createAuthorDTO);
         return new ResponseEntity<>(author, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAuthor(@PathVariable Long id, @RequestBody UpdateAuthorDTO updateAuthorDTO){
+        ValidationResult validationResult = updateAuthorValidator.validate(updateAuthorDTO);
+        if(!validationResult.isValid()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validationResult.getErrors());
+        }
+        AuthorDTO updatedAuthor = authorService.updateAuthor(id, updateAuthorDTO);
+        if (updatedAuthor == null) {
+            return new ResponseEntity<>("Author not found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(updatedAuthor, HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
