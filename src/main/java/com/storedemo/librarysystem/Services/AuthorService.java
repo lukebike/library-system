@@ -2,10 +2,12 @@ package com.storedemo.librarysystem.Services;
 
 import com.storedemo.librarysystem.DTOs.Author.AuthorDTO;
 import com.storedemo.librarysystem.DTOs.Author.CreateAuthorDTO;
+import com.storedemo.librarysystem.DTOs.Author.UpdateAuthorDTO;
 import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.DTOs.Mappers.AuthorMapper;
 import com.storedemo.librarysystem.DTOs.Mappers.BookMapper;
 import com.storedemo.librarysystem.Entities.Author;
+import com.storedemo.librarysystem.Entities.Book;
 import com.storedemo.librarysystem.ExceptionHandler.AuthorNotFoundException;
 import com.storedemo.librarysystem.Repositories.AuthorRepository;
 import com.storedemo.librarysystem.Repositories.BookRepository;
@@ -82,6 +84,36 @@ public class AuthorService {
             List<BookDTO> books = bookMapper.toDTOList(author.get().getBooks());
             authorDTO.books().addAll(books);
         }
+        return authorDTO;
+    }
+
+    public boolean deleteAuthor(Long id) {
+        Optional<Author> authorOptional = authorRepository.findById(id);
+        if(authorOptional.isEmpty()){
+            throw new AuthorNotFoundException("Author with the id: " + id + " not found");
+        }
+        Author author = authorOptional.get();
+        if(author.getBooks() != null){
+            for(Book book : author.getBooks()) {
+                book.setAuthor(null);
+                bookRepository.save(book);
+            }
+        }
+        authorRepository.delete(author);
+        return true;
+    }
+
+    public AuthorDTO updateAuthor(Long id, UpdateAuthorDTO updateAuthorDTO) {
+        Optional<Author> authorOptional = authorRepository.findById(id);
+        if(authorOptional.isEmpty()){
+            throw new AuthorNotFoundException("Author with the id: " + id + " not found");
+        }
+        Author author = authorOptional.get();
+        author.setFirstName(updateAuthorDTO.firstName());
+        author.setLastName(updateAuthorDTO.lastName());
+        author.setNationality(updateAuthorDTO.nationality());
+        Author savedAuthor = authorRepository.save(author);
+        AuthorDTO authorDTO = authorMapper.toDTO(savedAuthor);
         return authorDTO;
     }
 }

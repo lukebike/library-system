@@ -1,4 +1,4 @@
-package com.storedemo.librarysystem.Validators;
+package com.storedemo.librarysystem.Validators.Authors;
 
 import br.com.fluentvalidator.AbstractValidator;
 import com.storedemo.librarysystem.DTOs.Author.CreateAuthorDTO;
