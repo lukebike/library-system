@@ -3,6 +3,7 @@ package com.storedemo.librarysystem.Controllers;
 import br.com.fluentvalidator.context.ValidationResult;
 import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.DTOs.Book.CreateBookDTO;
+import com.storedemo.librarysystem.DTOs.Book.PagedBooksResponse;
 import com.storedemo.librarysystem.ExceptionHandler.BookNotFoundException;
 import com.storedemo.librarysystem.Services.BookService;
 import com.storedemo.librarysystem.Validators.BookValidator;
@@ -27,14 +28,14 @@ public class BookController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<BookDTO>> getBooks(@RequestParam int pageNumber, @RequestParam int pageSize) {
+    public ResponseEntity<PagedBooksResponse> getBooks(@RequestParam int pageNumber, @RequestParam int pageSize) {
         List<BookDTO> books = bookService.getAllBooks(pageNumber, pageSize);
         if(books.isEmpty()) {
             throw new BookNotFoundException("Books not found, please enter a valid page or page size");
         }
-        else {
-            return new ResponseEntity<>(books, HttpStatus.OK);
-        }
+        long totalCount = bookService.getTotalBooksCount();
+        PagedBooksResponse response = new PagedBooksResponse(books, totalCount);
+            return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/publication")

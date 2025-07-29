@@ -34,15 +34,21 @@ public class BookService {
 
     private final AuthorMapper authorMapper;
 
-    public BookService() {
-        bookMapper = new BookMapper();
-        authorMapper = new AuthorMapper();
+    public BookService(BookRepository bookRepository, AuthorRepository authorRepository, BookMapper bookMapper, AuthorMapper authorMapper) {
+        this.bookRepository = bookRepository;
+        this.authorRepository = authorRepository;
+        this.bookMapper = bookMapper;
+        this.authorMapper = authorMapper;
     }
 
     public List<BookDTO> getAllBooks(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Book> bookPage = bookRepository.findAll(pageable);
         List<Book> books = bookPage.getContent();
+        for(Book book : books) {
+            AuthorDTO authorDTO = authorMapper.toDTO(book.getAuthor());
+            book.setAuthor(authorMapper.toEntity(authorDTO));
+        }
         return books.stream().map(bookMapper::toDTO).collect(Collectors.toList());
     }
 
@@ -80,6 +86,10 @@ public class BookService {
                 book.getAvailableCopies(),
                 book.getTotalCopies(),
                 authorDTO);
+    }
+
+    public Long getTotalBooksCount() {
+        return bookRepository.count();
     }
 
     public BookDTO createBook(CreateBookDTO createBookDTO) {
