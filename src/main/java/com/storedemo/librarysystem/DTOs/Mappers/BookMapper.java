@@ -1,14 +1,25 @@
 package com.storedemo.librarysystem.DTOs.Mappers;
 
+import com.storedemo.librarysystem.DTOs.Author.AuthorDTO;
 import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.Entities.Book;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 @Component
 public class BookMapper {
+
+    private final AuthorMapper authorMapper;
+
+    @Autowired
+    public BookMapper(AuthorMapper authorMapper) {
+        this.authorMapper = authorMapper;
+    }
 
     public BookDTO toDTO(Book book) {
         return new BookDTO(
@@ -16,8 +27,7 @@ public class BookMapper {
                 book.getTitle(),
                 book.getPublicationYear(),
                 book.getAvailableCopies(),
-                book.getTotalCopies(),
-                null);
+                book.getTotalCopies(), authorMapper.toDTO(book.getAuthor()));
     }
 
 

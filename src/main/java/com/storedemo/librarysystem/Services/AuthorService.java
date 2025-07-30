@@ -20,18 +20,23 @@ import java.util.Optional;
 @Service
 public class AuthorService {
 
-    @Autowired
-    private AuthorRepository authorRepository;
+    private final AuthorRepository authorRepository;
 
-    @Autowired
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
 
     private final AuthorMapper authorMapper;
     private final BookMapper bookMapper;
 
-    public AuthorService() {
-        this.authorMapper = new AuthorMapper();
-        this.bookMapper = new BookMapper();
+    @Autowired
+    public AuthorService(
+            AuthorRepository authorRepository,
+            BookRepository bookRepository,
+            AuthorMapper authorMapper,
+            BookMapper bookMapper) {
+        this.authorRepository = authorRepository;
+        this.bookRepository = bookRepository;
+        this.authorMapper = authorMapper;
+        this.bookMapper = bookMapper;
     }
 
 
