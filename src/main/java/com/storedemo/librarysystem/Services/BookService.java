@@ -46,8 +46,11 @@ public class BookService {
         Page<Book> bookPage = bookRepository.findAll(pageable);
         List<Book> books = bookPage.getContent();
         for(Book book : books) {
-            AuthorDTO authorDTO = authorMapper.toDTO(book.getAuthor());
-            book.setAuthor(authorMapper.toEntity(authorDTO));
+            if(book.getAuthor() != null){
+                AuthorDTO authorDTO = authorMapper.toDTO(book.getAuthor());
+                book.setAuthor(authorMapper.toEntity(authorDTO));
+            }
+
         }
         return books.stream().map(bookMapper::toDTO).collect(Collectors.toList());
     }
