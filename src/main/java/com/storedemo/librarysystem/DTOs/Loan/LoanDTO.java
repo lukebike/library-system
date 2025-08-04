@@ -7,7 +7,7 @@ import com.storedemo.librarysystem.DTOs.User.UserDTO;
 import java.time.LocalDateTime;
 
 public record LoanDTO(
-        Long loanId,
+        Long id,
         UserDTO user,
         BookDTO book,
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

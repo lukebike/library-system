@@ -6,7 +6,7 @@ import com.storedemo.librarysystem.DTOs.Book.CreateBookDTO;
 import com.storedemo.librarysystem.DTOs.Book.PagedBooksResponse;
 import com.storedemo.librarysystem.ExceptionHandler.BookNotFoundException;
 import com.storedemo.librarysystem.Services.BookService;
-import com.storedemo.librarysystem.Validators.BookValidator;
+import com.storedemo.librarysystem.Validators.Books.BookValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

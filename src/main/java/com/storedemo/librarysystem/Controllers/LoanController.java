@@ -5,7 +5,7 @@ import br.com.fluentvalidator.context.ValidationResult;
 import com.storedemo.librarysystem.DTOs.Loan.CreateLoanDTO;
 import com.storedemo.librarysystem.DTOs.Loan.LoanDTO;
 import com.storedemo.librarysystem.Services.LoanService;
-import com.storedemo.librarysystem.Validators.LoanValidator;
+import com.storedemo.librarysystem.Validators.Loans.LoanValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +21,15 @@ public class LoanController {
 
     @Autowired
     private LoanValidator loanValidator;
+
+    @GetMapping
+    public ResponseEntity<List<LoanDTO>> getAllLoans(){
+        List<LoanDTO> loanDTOList = loanService.getAllLoans();
+        if (loanDTOList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(loanDTOList);
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<LoanDTO>> getLoanByUserId(@PathVariable long userId) {
