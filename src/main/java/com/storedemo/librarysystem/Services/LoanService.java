@@ -124,7 +124,9 @@ public class LoanService {
         }
         loan.setDueDate(loan.getDueDate().plusDays(14));
         loanRepository.save(loan);
-        return loanMapper.toDTO(loan);
+        UserDTO userDTO = userMapper.toDTO(loan.getUser());
+        BookDTO bookDTO = bookMapper.toDTO(loan.getBook());
+        return new LoanDTO(loan.getId(), userDTO, bookDTO, loan.getLoanDate(), loan.getDueDate(), loan.getReturnDate());
     }
 
     public LoanDTO returnLoan(Long loanId) {
@@ -142,12 +144,7 @@ public class LoanService {
         loan.setReturnDate(LocalDateTime.now());
         Loan saved = loanRepository.save(loan);
         UserDTO userDTO = userMapper.toDTO(saved.getUser());
-        BookDTO bookDTO = new BookDTO(saved.getBook().getId(), saved.getBook().getTitle(),
-                saved.getBook().getPublicationYear(),
-                saved.getBook().getAvailableCopies(),
-                saved.getBook().getTotalCopies(),
-                authorMapper.toDTO(saved.getBook().getAuthor()));
-
+        BookDTO bookDTO = bookMapper.toDTO(saved.getBook());
         return new LoanDTO(saved.getId(), userDTO, bookDTO, saved.getLoanDate(), saved.getDueDate(), saved.getReturnDate());
     }
 }
