@@ -53,6 +53,19 @@ public class LoanService {
     public LoanService() {
     }
 
+
+    @Transactional(readOnly = true)
+    public List<LoanDTO> getAllLoans(){
+        List<Loan> loans = loanRepository.findAll();
+        return loans.stream().map(loan -> new LoanDTO(loan.getId(),
+                        userMapper.toDTO(loan.getUser()),
+                        bookMapper.toDTO(loan.getBook()),
+                        loan.getLoanDate(),
+                        loan.getDueDate(),
+                        loan.getReturnDate())).collect(Collectors.toList());
+
+    }
+
     @Transactional(readOnly = true)
     public List<LoanDTO> getLoansByUserId(long userId) {
         Optional<List<Loan>> loans = loanRepository.findByUserId(userId);
