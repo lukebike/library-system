@@ -57,13 +57,16 @@ public class LoanService {
     @Transactional(readOnly = true)
     public List<LoanDTO> getAllLoans(){
         List<Loan> loans = loanRepository.findAll();
-        return loans.stream().map(loan -> new LoanDTO(loan.getId(),
+        return loans.stream()
+                .filter(loan -> loan.getBook() != null) // skip loans with null book
+                .map(loan -> new LoanDTO(
+                        loan.getId(),
                         userMapper.toDTO(loan.getUser()),
                         bookMapper.toDTO(loan.getBook()),
                         loan.getLoanDate(),
                         loan.getDueDate(),
-                        loan.getReturnDate())).collect(Collectors.toList());
-
+                        loan.getReturnDate()))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -146,5 +149,15 @@ public class LoanService {
         UserDTO userDTO = userMapper.toDTO(saved.getUser());
         BookDTO bookDTO = bookMapper.toDTO(saved.getBook());
         return new LoanDTO(saved.getId(), userDTO, bookDTO, saved.getLoanDate(), saved.getDueDate(), saved.getReturnDate());
+    }
+
+    public boolean deleteLoan(Long loanId){
+        Optional<Loan> loan = loanRepository.findById(loanId);
+        if (loan.isPresent()) {
+            loanRepository.delete(loan.get());
+            return true;
+        } else {
+            return false;
+        }
     }
 }

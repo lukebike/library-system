@@ -67,4 +67,13 @@ public class LoanController {
         }
         return ResponseEntity.ok(loanDTO);
    }
+
+   @DeleteMapping("/{id}")
+    public ResponseEntity<Boolean> deleteLoan(@PathVariable long id){
+         boolean isDeleted = loanService.deleteLoan(id);
+         if (!isDeleted) {
+              return ResponseEntity.notFound().build();
+         }
+         return ResponseEntity.ok(true);
+   }
 }
