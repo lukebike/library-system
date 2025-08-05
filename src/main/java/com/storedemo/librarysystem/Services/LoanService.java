@@ -150,4 +150,14 @@ public class LoanService {
         BookDTO bookDTO = bookMapper.toDTO(saved.getBook());
         return new LoanDTO(saved.getId(), userDTO, bookDTO, saved.getLoanDate(), saved.getDueDate(), saved.getReturnDate());
     }
+
+    public boolean deleteLoan(Long loanId){
+        Optional<Loan> loan = loanRepository.findById(loanId);
+        if (loan.isPresent()) {
+            loanRepository.delete(loan.get());
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
