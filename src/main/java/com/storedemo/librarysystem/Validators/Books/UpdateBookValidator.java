@@ -4,12 +4,13 @@ import br.com.fluentvalidator.AbstractValidator;
 import com.storedemo.librarysystem.DTOs.Book.CreateBookDTO;
 import com.storedemo.librarysystem.DTOs.Book.UpdateBookDTO;
 import com.storedemo.librarysystem.Repositories.AuthorRepository;
+import org.springframework.stereotype.Component;
 
 import static br.com.fluentvalidator.predicate.ComparablePredicate.greaterThanOrEqual;
 import static java.util.function.Predicate.not;
 
 
-
+@Component
 public class UpdateBookValidator extends AbstractValidator<UpdateBookDTO> {
 
     private final AuthorRepository authorRepository;

@@ -3,6 +3,7 @@ package com.storedemo.librarysystem.Services;
 import com.storedemo.librarysystem.DTOs.Author.AuthorDTO;
 import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.DTOs.Book.CreateBookDTO;
+import com.storedemo.librarysystem.DTOs.Book.UpdateBookDTO;
 import com.storedemo.librarysystem.DTOs.Mappers.AuthorMapper;
 import com.storedemo.librarysystem.DTOs.Mappers.BookMapper;
 import com.storedemo.librarysystem.Entities.Author;
@@ -106,6 +107,22 @@ public class BookService {
         Book saved = bookRepository.save(book);
         AuthorDTO authorDTO = authorMapper.toDTO(saved.getAuthor());
         return new BookDTO(saved.getId(), saved.getTitle(), saved.getPublicationYear(), saved.getAvailableCopies(), saved.getTotalCopies(), authorDTO);
+    }
+
+    public BookDTO updateBook(Long bookId, UpdateBookDTO updateBookDTO) {
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException("Book with id " + bookId + " not found, please enter a valid id"));
+        Author author = authorRepository.findById(updateBookDTO.authorId()).orElseThrow(() -> new AuthorNotFoundException("Author with id " + updateBookDTO.authorId() + " not found, please enter a valid id"));
+
+        book.setTitle(updateBookDTO.title());
+        book.setPublicationYear(updateBookDTO.publicationYear());
+        book.setAvailableCopies(updateBookDTO.availableCopies());
+        book.setTotalCopies(book.getTotalCopies() + updateBookDTO.availableCopies());
+        book.setAuthor(author);
+
+        Book updatedBook = bookRepository.save(book);
+        AuthorDTO authorDTO = authorMapper.toDTO(updatedBook.getAuthor());
+
+        return new BookDTO(updatedBook.getId(), updatedBook.getTitle(), updatedBook.getPublicationYear(), updatedBook.getAvailableCopies(), updatedBook.getTotalCopies(), authorDTO);
     }
 }
 
