@@ -4,9 +4,11 @@ import br.com.fluentvalidator.context.ValidationResult;
 import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.DTOs.Book.CreateBookDTO;
 import com.storedemo.librarysystem.DTOs.Book.PagedBooksResponse;
+import com.storedemo.librarysystem.DTOs.Book.UpdateBookDTO;
 import com.storedemo.librarysystem.ExceptionHandler.BookNotFoundException;
 import com.storedemo.librarysystem.Services.BookService;
 import com.storedemo.librarysystem.Validators.Books.BookValidator;
+import com.storedemo.librarysystem.Validators.Books.UpdateBookValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +19,14 @@ import java.util.List;
 @RequestMapping("/books")
 public class BookController {
 
-    @Autowired
-    private BookService bookService;
+    private final BookService bookService;
+    private final BookValidator bookValidator;
+    private final UpdateBookValidator updateBookValidator;
 
-    @Autowired
-    private BookValidator bookValidator;
-
-    public BookController() {
-
+    public BookController(BookService bookService, BookValidator bookValidator, UpdateBookValidator updateBookValidator) {
+        this.bookService = bookService;
+        this.bookValidator = bookValidator;
+        this.updateBookValidator = updateBookValidator;
     }
 
     @GetMapping()
@@ -75,5 +77,21 @@ public class BookController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateBook(@PathVariable long id, @RequestBody UpdateBookDTO book) {
+        try {
+            ValidationResult validationResult = updateBookValidator.validate(book);
+            if (!validationResult.isValid()) {
+                return ResponseEntity.badRequest().body(validationResult.getErrors());
+            }
+            BookDTO updatedBook = bookService.updateBook(id, book);
+            return new ResponseEntity<>(updatedBook, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
     }
 }
