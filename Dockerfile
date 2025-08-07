@@ -10,6 +10,7 @@ RUN chmod +x ./mvnw
 RUN ./mvnw dependency:go-offline -B
 
 COPY src src
+COPY library.db .
 
 RUN ./mvnw clean package -DskipTests
 RUN mv target/*.jar target/app.jar
