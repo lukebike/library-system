@@ -124,5 +124,14 @@ public class BookService {
 
         return new BookDTO(updatedBook.getId(), updatedBook.getTitle(), updatedBook.getPublicationYear(), updatedBook.getAvailableCopies(), updatedBook.getTotalCopies(), authorDTO);
     }
+
+    public boolean deleteBook(Long bookId){
+        Book book = bookRepository.findById(bookId).orElse(null);
+        if(book == null){
+            return false;
+        }
+        bookRepository.delete(book);
+        return true;
+    }
 }
 

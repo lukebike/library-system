@@ -5,6 +5,7 @@ import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.DTOs.Book.CreateBookDTO;
 import com.storedemo.librarysystem.DTOs.Book.PagedBooksResponse;
 import com.storedemo.librarysystem.DTOs.Book.UpdateBookDTO;
+import com.storedemo.librarysystem.Entities.Book;
 import com.storedemo.librarysystem.ExceptionHandler.BookNotFoundException;
 import com.storedemo.librarysystem.Services.BookService;
 import com.storedemo.librarysystem.Validators.Books.BookValidator;
@@ -93,5 +94,14 @@ public class BookController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteBook(@PathVariable long id) {
+        boolean deletedBook = bookService.deleteBook(id);
+        if(deletedBook) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }
