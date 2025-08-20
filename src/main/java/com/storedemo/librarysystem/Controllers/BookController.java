@@ -5,19 +5,17 @@ import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.DTOs.Book.CreateBookDTO;
 import com.storedemo.librarysystem.DTOs.Book.PagedBooksResponse;
 import com.storedemo.librarysystem.DTOs.Book.UpdateBookDTO;
-import com.storedemo.librarysystem.Entities.Book;
 import com.storedemo.librarysystem.ExceptionHandler.BookNotFoundException;
 import com.storedemo.librarysystem.Services.BookService;
 import com.storedemo.librarysystem.Validators.Books.BookValidator;
 import com.storedemo.librarysystem.Validators.Books.UpdateBookValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/api/books")
 public class BookController {
 
     private final BookService bookService;
