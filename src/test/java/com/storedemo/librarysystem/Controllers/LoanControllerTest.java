@@ -45,7 +45,8 @@ public class LoanControllerTest {
 
     @Test
     public void loanControllerCreateLoan_shouldReturnResponseEntityLoanDTO(){
-        User user = new User(null, "Test1", "User", "1234@gmail.com", "test@gmail.com", LocalDateTime.now(), null);
+        User user = new User(null, "Test1", "User", "1234@gmail.com", "test@gmail.com", LocalDateTime.now(), null,
+                null);
         user = userRepository.save(user);
 
         Book book = new Book(null, "Test Book", 2020, 3, 3, null );
