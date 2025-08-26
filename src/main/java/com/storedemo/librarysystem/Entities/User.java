@@ -27,13 +27,17 @@ public class User {
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
+    @Column(name = "role")
+    private String role;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Loan> loans;
+
 
     public User() {
     }
 
-    public User(Long id, String firstName, String lastName, String email, String password, LocalDateTime registrationDate, List<Loan> loans) {
+    public User(Long id, String firstName, String lastName, String email, String password, LocalDateTime registrationDate, String role, List<Loan> loans) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -41,6 +45,7 @@ public class User {
         this.password = password;
         this.registrationDate = registrationDate;
         this.loans = loans;
+        this.role = role;
     }
 
     public Long getId() {
@@ -90,4 +95,13 @@ public class User {
     public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
 }

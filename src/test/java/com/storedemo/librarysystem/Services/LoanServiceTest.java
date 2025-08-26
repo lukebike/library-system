@@ -66,7 +66,7 @@ public class LoanServiceTest {
         CreateLoanDTO createLoanDTO = new CreateLoanDTO(userId, bookId);
 
 
-        User user = new User(userId, "John", "Doe", "password", "dog@gmail.com", LocalDateTime.now(), null);
+        User user = new User(userId, "John", "Doe", "password", "dog@gmail.com", LocalDateTime.now(), null,null);
         Mockito.when(userRepositoryMock.findById(userId)).thenReturn(Optional.of(user));
 
         Book book = new Book(bookId, "New Book", 2020, 2, 3,

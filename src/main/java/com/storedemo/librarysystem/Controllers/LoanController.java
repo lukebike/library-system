@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping ("/loans")
+@RequestMapping ("/api/loans")
 public class LoanController {
 
     @Autowired

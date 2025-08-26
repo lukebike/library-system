@@ -8,6 +8,7 @@ import com.storedemo.librarysystem.Entities.User;
 import com.storedemo.librarysystem.ExceptionHandler.UserNotFoundException;
 import com.storedemo.librarysystem.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +20,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private final UserMapper userMapper;
 
@@ -59,7 +63,8 @@ public class UserService {
         user.setFirstName(createUserDTO.firstName());
         user.setLastName(createUserDTO.lastName());
         user.setEmail(createUserDTO.email());
-        user.setPassword(createUserDTO.password());
+        String hashedPassword = passwordEncoder.encode(createUserDTO.password());
+        user.setPassword(hashedPassword);
         user.setRegistrationDate(LocalDateTime.now());
         User saved = userRepository.save(user);
         return userMapper.toDTO(saved);
