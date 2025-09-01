@@ -66,6 +66,7 @@ public class UserService {
         String hashedPassword = passwordEncoder.encode(createUserDTO.password());
         user.setPassword(hashedPassword);
         user.setRegistrationDate(LocalDateTime.now());
+        user.setRole("USER");
         User saved = userRepository.save(user);
         return userMapper.toDTO(saved);
     }
@@ -73,7 +74,8 @@ public class UserService {
     public boolean deleteUser(Long id){
         Optional<User> userOptional = userRepository.findById(id);
         if(userOptional.isEmpty()) return false;
-        userRepository.delete(userOptional.get());
+        userOptional.get().setEnabled(false);
+        userRepository.save(userOptional.get());
         return true;
     }
 }

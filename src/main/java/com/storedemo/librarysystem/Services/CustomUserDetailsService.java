@@ -1,7 +1,5 @@
 package com.storedemo.librarysystem.Services;
 
-import com.storedemo.librarysystem.Entities.Permission;
-import com.storedemo.librarysystem.Entities.Role;
 import com.storedemo.librarysystem.Entities.User;
 import com.storedemo.librarysystem.ExceptionHandler.UserNotFoundException;
 import com.storedemo.librarysystem.Repositories.UserRepository;
@@ -13,8 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -24,26 +21,34 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UserNotFoundException {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+        Optional<User> user = userRepository.findByEmail(email);
 
-        return buildUserDetails(user);
+
+        return org.springframework.security.core.userdetails.User.withUsername(user.get().getEmail())
+                .password(user.get().getPassword())
+                .authorities("ROLE_" + user.get().getRole())
+                .accountExpired(false)
+                .accountLocked(false)
+                .disabled(!user.get().isEnabled())
+                .build();
     }
-
-    private UserDetails buildUserDetails(User user){
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        for (Role role : user.getRoles()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-
-            for(Permission permission : role.getPermissions()) {
-                grantedAuthorities.add(new SimpleGrantedAuthority(permission.getName()));
-            }
-        }
-
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .authorities(grantedAuthorities).disabled(!user.isEnabled()).build();
-    }
-
-
 }
+
+//    private UserDetails buildUserDetails(User user){
+//        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+//        for (Role role : user.getRoles()) {
+//            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+//
+//            for(Permission permission : role.getPermissions()) {
+//                grantedAuthorities.add(new SimpleGrantedAuthority(permission.getName()));
+//            }
+//        }
+//
+//        return org.springframework.security.core.userdetails.User.builder()
+//                .username(user.getEmail())
+//                .password(user.getPassword())
+//                .authorities(grantedAuthorities).disabled(!user.isEnabled()).build();
+//    }
+//
+//
+//}

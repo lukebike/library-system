@@ -13,7 +13,8 @@ public class UserMapper {
                     user.getFirstName(),
                     user.getLastName(),
                     user.getEmail(),
-                    user.getRegistrationDate()
+                    user.getRegistrationDate(),
+                    user.getRole()
             );
         }
 
@@ -25,6 +26,7 @@ public class UserMapper {
             user.setLastName(userDTO.lastName());
             user.setEmail(userDTO.email());
             user.setRegistrationDate(userDTO.registrationDate());
+            user.setRole(userDTO.role());
             return user;
         }
 
