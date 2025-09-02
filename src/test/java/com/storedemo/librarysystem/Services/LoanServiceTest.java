@@ -84,7 +84,7 @@ public class LoanServiceTest {
                     user.getFirstName(),
                     user.getLastName(),
                     user.getEmail(),
-                    user.getRegistrationDate());
+                    user.getRegistrationDate(), user.getRole());
 
         BookDTO bookDTO = new BookDTO(book.getId(),
                 book.getTitle(),
