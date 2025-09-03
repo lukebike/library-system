@@ -32,7 +32,7 @@ public class User {
     @Column(name = "role")
     private String role;
 
-    @Column
+    @Column(name = "enabled")
     private boolean enabled = true;
 
 //    @ManyToMany

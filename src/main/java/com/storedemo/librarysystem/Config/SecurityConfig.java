@@ -1,5 +1,7 @@
 package com.storedemo.librarysystem.Config;
 
+import com.storedemo.librarysystem.DTOs.User.UserDTO;
+import com.storedemo.librarysystem.Entities.User;
 import com.storedemo.librarysystem.Services.CustomUserDetailsService;
 import com.storedemo.librarysystem.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +68,8 @@ public class SecurityConfig {
                         .passwordParameter("password")
                         .successHandler((request, response, authentication) -> {
                             response.setStatus(200);
-                            response.getWriter().write(  userService.getUserByEmail(authentication.getName()).firstName());
+                            UserDTO user = userService.getUserByEmail(authentication.getName());
+                            response.getWriter().write(user.toString());
                         })
                         .failureHandler((request, response, exception) -> {
                             response.setStatus(401);
