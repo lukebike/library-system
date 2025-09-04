@@ -56,11 +56,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests
                         -> authorizeRequests
                         .requestMatchers(HttpMethod.OPTIONS, "/api/**")
-                        .permitAll()
+                                .authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/**")
-                        .permitAll()
+.authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/**")
-                        .permitAll()
+                                .authenticated()
                 )
                 .formLogin(form -> form
                         .loginProcessingUrl("/api/login")
