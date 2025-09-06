@@ -11,6 +11,7 @@ import com.storedemo.librarysystem.Validators.Books.BookValidator;
 import com.storedemo.librarysystem.Validators.Books.UpdateBookValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class BookController {
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     public ResponseEntity<?> createBook(@RequestBody CreateBookDTO book){
         try {
