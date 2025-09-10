@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -17,9 +18,14 @@ import java.util.Date;
 public class JwtUtils {
     public static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    private String jwtSecret = "ab9d5a111ce79802cd96d965a0c9cbe6b68c9c95bce09ca714f59f513112f431493e820423aba7996f3dc4e385be181977445b86248c74a43ae7f9a45bd41c48";
+    @Value("${app.jwtSecret}")
+    private String jwtSecret;
 
-    private int jwtExpirationMs = 100000;
+    @Value("${app.jwtExpirationMs}")
+    private int jwtExpirationMs;
+
+    @Value("${app.jwtRefreshExpirationMs}")
+    private Long refreshTokenDurationMs;
 
     public String generateJwtToken(Authentication authentication) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
@@ -48,5 +54,14 @@ public class JwtUtils {
             logger.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
+    }
+
+    public String generateRefreshToken(Authentication authentication) {
+        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+        return Jwts.builder().setSubject(userPrincipal.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenDurationMs))
+                .signWith(SignatureAlgorithm.HS512, jwtSecret
+                ).compact();
     }
 }

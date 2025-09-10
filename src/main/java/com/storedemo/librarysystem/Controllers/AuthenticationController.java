@@ -8,6 +8,8 @@ import com.storedemo.librarysystem.Repositories.UserRepository;
 import com.storedemo.librarysystem.Services.UserService;
 import com.storedemo.librarysystem.Utils.JwtResponse;
 import com.storedemo.librarysystem.Utils.JwtUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,4 +77,5 @@ public class AuthenticationController {
         UserDTO userDTO = userService.createUser(createUserDTO);
         return ResponseEntity.ok(userDTO);
     }
+
 }

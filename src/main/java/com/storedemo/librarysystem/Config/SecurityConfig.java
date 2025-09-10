@@ -37,6 +37,11 @@ public class SecurityConfig {
     private AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
+    public RateLimitingFilter rateLimitingFilter() {
+        return new RateLimitingFilter();
+    }
+
+    @Bean
     public AuthTokenFilter authTokenFilter() {
         return new AuthTokenFilter();
     }
@@ -71,9 +76,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests
                         -> authorizeRequests
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/books/**").hasRole("USER").anyRequest().authenticated()
+                        .requestMatchers(HttpMethod.GET,"/api/books/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST,"/api/books/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/books/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/books/**").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/authors/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST,"/api/authors/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/authors/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/authors/**").hasRole("ADMIN").anyRequest().authenticated()
                 );
         http.authenticationProvider(daoAuthenticationProvider());
+        http.addFilterBefore(rateLimitingFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         http.formLogin(form -> form.disable());
         http.httpBasic(basic -> basic.disable());
