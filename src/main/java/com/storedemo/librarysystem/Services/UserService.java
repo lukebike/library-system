@@ -52,7 +52,8 @@ public class UserService {
         user.setLastName(updateUserDTO.lastName());
         user.setEmail(updateUserDTO.email());
         if(updateUserDTO.newPassword() != null && !updateUserDTO.newPassword().isEmpty()) {
-            user.setPassword(updateUserDTO.newPassword());
+            String hashedPassword = passwordEncoder.encode(updateUserDTO.newPassword());
+            user.setPassword(hashedPassword);
         }
         User savedUser = userRepository.save(user);
         return userMapper.toDTO(savedUser);
