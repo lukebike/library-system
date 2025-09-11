@@ -1,5 +1,7 @@
 package com.storedemo.librarysystem.Config;
 
+import com.storedemo.librarysystem.DTOs.User.UserDTO;
+import com.storedemo.librarysystem.Entities.User;
 import com.storedemo.librarysystem.Services.CustomUserDetailsService;
 import com.storedemo.librarysystem.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,15 +9,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
@@ -28,6 +33,18 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    @Autowired
+    private AuthEntryPointJwt unauthorizedHandler;
+
+    @Bean
+    public RateLimitingFilter rateLimitingFilter() {
+        return new RateLimitingFilter();
+    }
+
+    @Bean
+    public AuthTokenFilter authTokenFilter() {
+        return new AuthTokenFilter();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -47,36 +64,35 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, UserService userService) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, UserService userService, AuthenticationProvider authenticationProvider) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .authorizeHttpRequests(authorizeRequests
                         -> authorizeRequests
-                        .requestMatchers(HttpMethod.OPTIONS, "/api/**")
-                        .permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/**")
-                        .permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/**")
-                        .permitAll()
-                )
-                .formLogin(form -> form
-                        .loginProcessingUrl("/api/login")
-                        .usernameParameter("username")
-                        .passwordParameter("password")
-                        .successHandler((request, response, authentication) -> {
-                            response.setStatus(200);
-                            response.getWriter().write(  userService.getUserByEmail(authentication.getName()).firstName());
-                        })
-                        .failureHandler((request, response, exception) -> {
-                            response.setStatus(401);
-                            response.getWriter().write("Login failed");
-                        }).permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .permitAll()
-                ).userDetailsService(userDetailsService);
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/books/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST,"/api/books/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/books/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/books/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/authors/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST,"/api/authors/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/authors/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/authors/**").hasRole("ADMIN").anyRequest().authenticated()
+                );
+        http.authenticationProvider(daoAuthenticationProvider());
+        http.addFilterBefore(rateLimitingFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.formLogin(form -> form.disable());
+        http.httpBasic(basic -> basic.disable());
         return http.build();
     }
 
@@ -86,9 +102,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         return daoAuthenticationProvider;
     }
