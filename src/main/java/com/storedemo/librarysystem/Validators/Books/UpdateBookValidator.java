@@ -1,7 +1,6 @@
 package com.storedemo.librarysystem.Validators.Books;
 
 import br.com.fluentvalidator.AbstractValidator;
-import com.storedemo.librarysystem.DTOs.Book.CreateBookDTO;
 import com.storedemo.librarysystem.DTOs.Book.UpdateBookDTO;
 import com.storedemo.librarysystem.Repositories.AuthorRepository;
 import org.springframework.stereotype.Component;

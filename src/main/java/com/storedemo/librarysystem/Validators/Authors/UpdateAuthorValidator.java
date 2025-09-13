@@ -4,9 +4,6 @@ import br.com.fluentvalidator.AbstractValidator;
 import com.storedemo.librarysystem.DTOs.Author.UpdateAuthorDTO;
 import org.springframework.stereotype.Component;
 
-
-import static java.util.function.Predicate.not;
-
 @Component
 public class UpdateAuthorValidator extends AbstractValidator<UpdateAuthorDTO> {
 

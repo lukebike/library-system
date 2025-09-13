@@ -1,8 +1,8 @@
 package com.storedemo.librarysystem.Config;
-import org.springframework.context.annotation.Bean; // Allows you to define beans (objects managed by Spring).
-import org.springframework.context.annotation.Configuration; // Marks this class as a configuration class for Spring.
-import org.springframework.web.servlet.config.annotation.CorsRegistry; // Used to configure CORS mappings.
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer; // Interface for customizing
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig {
