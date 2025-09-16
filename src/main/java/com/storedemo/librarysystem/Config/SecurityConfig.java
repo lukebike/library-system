@@ -1,7 +1,5 @@
 package com.storedemo.librarysystem.Config;
 
-import com.storedemo.librarysystem.DTOs.User.UserDTO;
-import com.storedemo.librarysystem.Entities.User;
 import com.storedemo.librarysystem.Services.CustomUserDetailsService;
 import com.storedemo.librarysystem.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +13,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -73,17 +69,28 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests
                         -> authorizeRequests
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/books/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET,"/api/books/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/books/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/books/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/books/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/users/**").hasRole("ADMIN")
-                        .requestMatchers("/api/authors/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET,"/api/authors/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/authors/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/authors/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE,"/api/authors/**").hasRole("ADMIN").anyRequest().authenticated()
+                        .requestMatchers(HttpMethod.DELETE,"/api/authors/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/loans/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/loans/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/loans/{id}/extend").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/loans/{id}/return").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/loans/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                ).headers(
+                        headers -> headers
+                                .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
+                                .frameOptions(frame -> frame.deny())
+                                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
                 );
         http.authenticationProvider(daoAuthenticationProvider());
         http.addFilterBefore(rateLimitingFilter(), UsernamePasswordAuthenticationFilter.class);

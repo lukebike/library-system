@@ -1,10 +1,7 @@
 package com.storedemo.librarysystem.Entities;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 @Entity
 @Table(name = "users")
 public class User {

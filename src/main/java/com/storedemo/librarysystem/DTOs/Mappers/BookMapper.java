@@ -1,6 +1,5 @@
 package com.storedemo.librarysystem.DTOs.Mappers;
 
-import com.storedemo.librarysystem.DTOs.Author.AuthorDTO;
 import com.storedemo.librarysystem.DTOs.Book.BookDTO;
 import com.storedemo.librarysystem.Entities.Book;
 import org.springframework.beans.factory.annotation.Autowired;

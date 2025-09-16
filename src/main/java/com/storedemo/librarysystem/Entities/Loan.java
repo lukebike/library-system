@@ -2,9 +2,6 @@ package com.storedemo.librarysystem.Entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import org.hibernate.annotations.GenerationTime;
-
-import javax.annotation.processing.Generated;
 import java.time.LocalDateTime;
 
 @Entity
