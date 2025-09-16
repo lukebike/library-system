@@ -79,6 +79,7 @@ public class BookController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateBook(@PathVariable long id, @RequestBody UpdateBookDTO book) {
         try {
@@ -95,6 +96,7 @@ public class BookController {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable long id) {
         boolean deletedBook = bookService.deleteBook(id);
