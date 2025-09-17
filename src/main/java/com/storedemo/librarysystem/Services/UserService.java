@@ -39,8 +39,9 @@ public class UserService {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
             return userMapper.toDTO(user.get());
+        } else {
+            return null;
         }
-        throw new UserNotFoundException("User with email " + email + " not found");
     }
 
     public UserDTO updateUser(Long id, UpdateUserDTO updateUserDTO){

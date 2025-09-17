@@ -62,15 +62,18 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody SignUpRequest signUpRequest){
-        {
-            if(userRepository.findByEmail(signUpRequest.getUsername()).isPresent()){
+        System.out.println(signUpRequest.getUsername());
+        System.out.println(signUpRequest.getPassword());
+        System.out.println(signUpRequest.getFirstName());
+        System.out.println(signUpRequest.getLastName());
+        UserDTO existingUser = userService.getUserByEmail(signUpRequest.getUsername());
+            if(existingUser != null){
                 return ResponseEntity.badRequest().body("Error: Username is already taken!");
             }
-        }
-
-        CreateUserDTO createUserDTO = new CreateUserDTO(signUpRequest.getFirstName(), signUpRequest.getLastName(), signUpRequest.getUsername(), signUpRequest.getPassword());
-        UserDTO userDTO = userService.createUser(createUserDTO);
-        return ResponseEntity.ok(userDTO);
+            else {
+                CreateUserDTO createUserDTO = new CreateUserDTO(signUpRequest.getFirstName(), signUpRequest.getLastName(), signUpRequest.getUsername(), signUpRequest.getPassword());
+                UserDTO userDTO = userService.createUser(createUserDTO);
+                return ResponseEntity.ok(userDTO);
+            }
     }
-
 }
