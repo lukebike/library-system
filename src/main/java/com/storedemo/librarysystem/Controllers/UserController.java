@@ -68,11 +68,15 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody CreateUserDTO createUserDTO) {
         ValidationResult validationResult = userValidator.validate(createUserDTO);
+        UserDTO userDTO = userService.getUserByEmail(createUserDTO.email());
+        if(userDTO != null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already in use");
+        }
         if(!validationResult.isValid()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validationResult);
         }
-        UserDTO userDTO = userService.createUser(createUserDTO);
-        return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
+        UserDTO createdUserDTO = userService.createUser(createUserDTO);
+        return new ResponseEntity<>(createdUserDTO, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
