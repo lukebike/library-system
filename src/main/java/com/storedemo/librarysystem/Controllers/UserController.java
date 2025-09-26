@@ -29,15 +29,26 @@ public class UserController {
     @Autowired
     private UpdateUserValidator updateUserValidator;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-     List<UserDTO> usersList = userService.getAllUsers();
-     if(usersList.isEmpty()){
-         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-     } else {
-         return new ResponseEntity<>(usersList, HttpStatus.OK);
-     }
+    public ResponseEntity<List<UserDTO>> getAllUsers(Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (isAdmin) {
+            List<UserDTO> usersList = userService.getAllUsers();
+            if (usersList.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(usersList, HttpStatus.OK);
+            }
+        } else {
+            String currentEmail = authentication.getName();
+            UserDTO userDTO = userService.getUserByEmail(currentEmail);
+            if (userDTO == null) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(List.of(userDTO), HttpStatus.OK);
+        }
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
@@ -55,6 +66,7 @@ public class UserController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UpdateUserDTO updateUserDTO) {
         ValidationResult validationResult = updateUserValidator.validate(updateUserDTO);
@@ -65,6 +77,7 @@ public class UserController {
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody CreateUserDTO createUserDTO) {
         ValidationResult validationResult = userValidator.validate(createUserDTO);
@@ -79,6 +92,7 @@ public class UserController {
         return new ResponseEntity<>(createdUserDTO, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id){
         boolean isDeleted = userService.deleteUser(id);
